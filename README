@@ -1,3 +1,10 @@
+roger_rabbit is a wrapper around the bunny rabbitmq gem
+that makes doing things with rabbitmq simple.
+
+The point is to come up with a set of conventions that make
+rabbitmq services easy to configure, maintain, develop, and 
+test.
+
 # Messages are transmitted as json.  Deserialized as
 # ActiveSupport::HashWithIndifferentAccess.
 
