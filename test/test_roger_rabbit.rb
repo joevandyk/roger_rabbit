@@ -31,7 +31,7 @@ class TestRogerRabbit < Test::Unit::TestCase
   def test_rpc
     queue_name = "rpc"
 
-    t = Thread.new do
+    Thread.new do
       RogerRabbit.rpc_listen(queue_name) do |args|
         result = {}
         args.each do |key, value|
@@ -50,11 +50,13 @@ class TestRogerRabbit < Test::Unit::TestCase
     end
 
     # Without block
-    result = RogerRabbit.rpc_message(queue_name, :joe => 'cool')
-    assert_equal({"joe" => "coolest"}, result)
-    count += 1
+    2.times do
+      result = RogerRabbit.rpc_message(queue_name, :joe => 'cool')
+      assert_equal({"joe" => "coolest"}, result)
+      count += 1
+    end
 
     sleep 0.1 # Wait for thread to finish
-    assert_equal 2, count
+    assert_equal 3, count, "we should have dealt with two messages"
   end
 end
