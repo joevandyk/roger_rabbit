@@ -1,22 +1,26 @@
 require 'roger_rabbit'
 
 
+# Publishing a message, don't care about result.
 RogerRabbit.publish "queue-name", :joe => "cool"
 
+# Consuming the above message.
 RogerRabbit.consume "queue-name" do |msg|
   # msg is { :joe => "cool" }
 end
 
+
+# Listening for a RPC message.
 RogerRabbit.rpc_listen("another-queue") do |args|
   args.merge({:true => true})
 end
   
-# RPC with result directly returned
+# Sending an RPC message
 result = RogerRabbit.rpc_message("another-queue", :joe => "cool")
 # result is { :joe => "cool", :true => "true" }
 
 
-# RPC with result returned in a block
+# Sending an RPC message with result as block
 RogerRabbit.rpc_message("another-queue", :joe => "cool") do |result|
   # result is { :joe => "cool", :true => "true" }
 end
