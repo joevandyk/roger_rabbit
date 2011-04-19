@@ -1,5 +1,5 @@
-require 'roger_rabbit'
-
+# Messages are transmitted as json.  Deserialized as
+# ActiveSupport::HashWithIndifferentAccess.
 
 # Publishing a message, don't care about result.
 RogerRabbit.publish "queue-name", :joe => "cool"
