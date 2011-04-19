@@ -19,6 +19,7 @@ class TestRogerRabbit < Test::Unit::TestCase
       Timeout.timeout(0.05) do
         RogerRabbit.consume queue_name do |args|
           assert_equal({ "joe" => 'cool' }, args)
+          assert_equal "cool", args[:joe] # Indifferent access
           count += 1
         end
       end
