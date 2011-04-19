@@ -2,10 +2,10 @@ require 'rubygems'
 require 'test/unit'
 require 'roger_rabbit'
 
+# You should have rabbitmq installed and running.
 class TestRogerRabbit < Test::Unit::TestCase
 
-  # You should have rabbitmq installed and running.
-  def test_it
+  def test_publish_consume
     queue_name = "test"
     2.times do
       RogerRabbit.publish queue_name, :joe => 'cool'
@@ -26,5 +26,35 @@ class TestRogerRabbit < Test::Unit::TestCase
     end
 
     assert_equal 2, count, "we should have consumed 2 messages"
+  end
+
+  def test_rpc
+    queue_name = "rpc"
+
+    t = Thread.new do
+      RogerRabbit.rpc_listen(queue_name) do |args|
+        result = {}
+        args.each do |key, value|
+          result[key] = "#{value}est"
+        end
+        result
+      end
+    end
+
+    count = 0
+
+    # With block
+    RogerRabbit.rpc_message(queue_name, :joe => 'cool') do |result|
+      assert_equal({"joe" => "coolest"}, result)
+      count += 1
+    end
+
+    # Without block
+    result = RogerRabbit.rpc_message(queue_name, :joe => 'cool')
+    assert_equal({"joe" => "coolest"}, result)
+    count += 1
+
+    sleep 0.1 # Wait for thread to finish
+    assert_equal 2, count
   end
 end

@@ -1,29 +1,22 @@
-require 'rubygems'
-require 'test/unit'
 require 'roger_rabbit'
 
-class TestRogerRabbit < Test::Unit::TestCase
 
-  # You should have rabbitmq installed and running.
-  def test_it
-    queue_name = "test"
-    2.times do
-      RogerRabbit.publish queue_name, :joe => 'cool'
-    end
+RogerRabbit.publish "queue-name", :joe => "cool"
 
-    count = 0
+RogerRabbit.consume "queue-name" do |msg|
+  # msg is { :joe => "cool" }
+end
 
-    # RogerRabbit.consume will loop forever, so we're
-    # going to break out of it with a Timeout.
-    assert_raises(Timeout::Error) do
-      Timeout.timeout(0.05) do
-        RogerRabbit.consume queue_name do |args|
-          assert_equal({ "joe" => 'cool' }, args)
-          count += 1
-        end
-      end
-    end
+RogerRabbit.rpc_listen("another-queue") do |args|
+  args.merge({:true => true})
+end
+  
+# RPC with result directly returned
+result = RogerRabbit.rpc_message("another-queue", :joe => "cool")
+# result is { :joe => "cool", :true => "true" }
 
-    assert_equal 2, count, "we should have consumed 2 messages"
-  end
+
+# RPC with result returned in a block
+RogerRabbit.rpc_message("another-queue", :joe => "cool") do |result|
+  # result is { :joe => "cool", :true => "true" }
 end
