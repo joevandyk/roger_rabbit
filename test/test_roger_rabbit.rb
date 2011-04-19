@@ -57,6 +57,6 @@ class TestRogerRabbit < Test::Unit::TestCase
     end
 
     sleep 0.1 # Wait for thread to finish
-    assert_equal 3, count, "we should have dealt with two messages"
+    assert_equal 3, count, "we should have dealt with three messages"
   end
 end
